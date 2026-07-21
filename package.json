@@ -1,0 +1,11 @@
+{
+  "name": "mole-whack",
+  "version": "1.0.0",
+  "description": "닷 두더지 잡기 — DotPad 촉각 반응 게임 (Dot Games 플랫폼)",
+  "scripts": {
+    "test": "node test.mjs"
+  },
+  "devDependencies": {
+    "jsdom": "^25.0.1"
+  }
+}
