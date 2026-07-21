@@ -144,7 +144,9 @@ svg[data-icon]{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round
    4. 인트로 화면 (명세 §3.1)
    ============================================================ */
 .intro-screen{
-  flex-direction:column;justify-content:center;
+  flex-direction:column;
+  justify-content:flex-start;      /* 폴백: 넘치면 항상 위에서부터 스크롤 가능 */
+  justify-content:safe center;     /* 지원 브라우저: 짧으면 중앙, 넘치면 위쪽부터 스크롤 */
   gap:22px;padding:clamp(20px,5vw,44px);
   overflow-y:auto;
 }
@@ -248,6 +250,7 @@ kbd{
   flex-direction:column;
   padding:clamp(12px,3vw,22px);
   gap:14px;min-height:0;
+  overflow-y:auto;
 }
 .game-header{
   display:flex;align-items:center;gap:12px;
@@ -303,7 +306,7 @@ kbd{
 .mole-stage-wrap{flex:1;display:grid;place-items:center;min-height:0;padding:6px 0}
 .mole-stage{
   position:relative;
-  width:min(100%,570px);margin-inline:auto;
+  width:min(100%,570px,calc((100vh - 180px)/.92));margin-inline:auto;
   display:grid;gap:14px;
   grid-template-columns:repeat(3,1fr);
   grid-template-rows:repeat(3,1fr);
@@ -446,7 +449,10 @@ dialog::backdrop{background:rgba(4,20,22,.72);backdrop-filter:blur(4px)}
    8. 결과 화면 (명세 §3.9)
    ============================================================ */
 .result-screen{
-  flex-direction:column;justify-content:center;align-items:center;
+  flex-direction:column;
+  justify-content:flex-start;
+  justify-content:safe center;
+  align-items:center;
   gap:18px;padding:clamp(20px,5vw,44px);text-align:center;overflow-y:auto;
 }
 .result-card{
@@ -523,6 +529,34 @@ body.embed .garden-bg{opacity:.9}
   .mole-hole{min-height:64px;min-width:64px}
   .play-screen{gap:9px;padding:10px}
   .game-controls button{min-height:42px}
+}
+/* 매우 짧은 높이(가로모드 휴대폰 등): 무대·컨트롤을 한 번 더 축소 */
+@media (max-height:460px){
+  .game-header{min-height:32px}
+  .status-message{padding:6px 12px}
+  .game-hud{margin-block:0;gap:6px}
+  .game-hud>div{padding:4px 8px}
+  .game-hud dt{font-size:.64rem}
+  .game-hud dd{font-size:.9rem}
+  .reaction-panel{margin-block:2px}
+  .ready-prompt{padding:8px 12px}
+  .mole-stage{gap:6px}
+  .mole-hole{min-height:48px;min-width:48px}
+  .direction-icon{font-size:1.2rem}
+  .direction-label{display:none}
+  .active-mole{width:clamp(40px,40%,90px)}
+  .play-screen{gap:6px;padding:8px}
+  .game-controls{grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+  .game-controls button{min-height:34px;padding:0 4px;font-size:.72rem}
+  .game-controls button svg{width:15px;height:15px}
+  .result-card{padding:16px 18px;gap:4px;max-height:calc(100vh - 24px);overflow-y:auto}
+  .result-mole{width:clamp(64px,18vw,100px);margin-top:-2px}
+  .result-card h2{font-size:1.4rem}
+  .result-stats{gap:8px;margin:6px 0 2px}
+  .result-stats>div{padding:7px 8px}
+  .result-stats dd{font-size:1.1rem}
+  .result-actions{gap:6px;margin-top:2px}
+  .result-actions .button{min-height:38px}
 }
 
 /* 모션 감소 (명세 §3.3 · §6 · §10) */
