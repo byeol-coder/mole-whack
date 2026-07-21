@@ -65,6 +65,7 @@ button{font:inherit}
    ============================================================ */
 .game-shell{
   position:relative;
+  z-index:1;
   height:100dvh;
   width:100%;
   max-width:760px;
@@ -76,9 +77,9 @@ button{font:inherit}
   isolation:isolate;
 }
 .game-shell>.screen{grid-area:1/1;min-height:0}
-/* 공용 정원 배경 (실제 이미지 적용, 데스크톱/모바일 반응형 교체) */
+/* 공용 정원 배경 — 뷰포트 전체를 덮음 (게임 카드의 max-width와 무관) */
 .garden-bg{
-  position:absolute;inset:0;z-index:-2;
+  position:fixed;inset:0;z-index:0;
   background-color:#4d8a46; /* 이미지 로드 전/실패 시 대비되는 잔디색 폴백 */
   --garden-image:url('assets/backgrounds/mole-garden-desktop.webp');
 }
@@ -536,8 +537,8 @@ body.embed .garden-bg{opacity:.9}
 </style>
 </head>
 <body>
+<div class="garden-bg" aria-hidden="true"></div>
 <main class="game-shell" data-screen="intro" aria-label="닷 두더지 잡기">
-  <div class="garden-bg" aria-hidden="true"></div>
 
   <!-- ========== 인트로 화면 ========== -->
   <section class="screen intro-screen" aria-labelledby="game-title">
