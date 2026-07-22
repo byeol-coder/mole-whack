@@ -848,6 +848,7 @@ function icon(name, cls){ return '<svg data-icon class="'+(cls||'icon')+'" viewB
 
 /* ---------- 두더지 캐릭터 (실제 이미지, 투명 배경 처리 완료) ---------- */
 const MOLE = '<img class="mole-img" src="assets/characters/mole-default.webp" alt="" aria-hidden="true">';
+const MOLE_CELEBRATION = '<img class="mole-img" src="assets/characters/mole-celebration.webp" alt="" aria-hidden="true">';
 
 /* ---------- 언어 (dot-games-host 공통 관례: ?lang=en) ---------- */
 const params = new URLSearchParams(location.search);
@@ -1555,7 +1556,7 @@ $("res-practice").innerHTML = icon("bolt") + S("빠른 연습 (무제한)","Quic
 $("res-lobby").innerHTML = icon("home") + S("로비로","Lobby");
 $("best-badge").querySelector("span[aria-hidden]").innerHTML = icon("trophy");
 $("intro-mole-slot").innerHTML = '<div class="intro-mole">' + MOLE + '</div>';
-$("result-mole-slot").innerHTML = '<div class="result-mole">' + MOLE + '</div>';
+$("result-mole-slot").innerHTML = '<div class="result-mole">' + MOLE_CELEBRATION + '</div>';
 $("ready-button").innerHTML = icon("bolt") + S("준비 완료","Ready");
 
 /* ---------- 정적 HTML 텍스트 다국어 적용 (dot-games-host 공통 관례: ?lang=en 이면 영문으로 치환) ---------- */
