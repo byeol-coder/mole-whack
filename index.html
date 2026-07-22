@@ -94,11 +94,10 @@ button{font:inherit}
 .garden-bg{
   position:fixed;inset:0;z-index:0;
   background-color:#4d8a46; /* 이미지 로드 전/실패 시 대비되는 잔디색 폴백 */
-  --garden-image:url('assets/backgrounds/mole-garden-desktop.webp');
 }
 .garden-bg::before{
   content:"";position:absolute;inset:0;
-  background-image:var(--garden-image);
+  background-image:url('assets/backgrounds/mole-garden-desktop.webp');
   background-size:cover;background-position:center center;
 }
 /* 상하단 비네트: UI 텍스트 대비 확보 (실제 잔디/울타리는 이미지 자체에 있음) */
@@ -107,7 +106,7 @@ button{font:inherit}
   background:linear-gradient(180deg, rgba(4,25,27,.42) 0%, transparent 24%, transparent 66%, rgba(4,25,27,.5) 100%);
 }
 @media (max-width:640px){
-  .garden-bg{ --garden-image:url('assets/backgrounds/mole-garden-mobile.webp'); }
+  .garden-bg::before{ background-image:url('assets/backgrounds/mole-garden-mobile.webp'); }
 }
 
 .screen{display:none;min-height:0}
@@ -171,7 +170,12 @@ svg[data-icon]{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round
   font-size:var(--fs-caption);letter-spacing:.28em;text-transform:uppercase;
   color:var(--accent);font-weight:600;
 }
-.intro-content{text-align:center;display:flex;flex-direction:column;gap:14px}
+.intro-content{
+  text-align:center;display:flex;flex-direction:column;gap:14px;
+  background:rgba(6,28,30,.8);border:1px solid var(--border);
+  border-radius:var(--radius);padding:18px clamp(16px,4vw,28px);
+  backdrop-filter:blur(2px);
+}
 h1{
   margin:0;font-family:var(--font-display);
   font-size:var(--fs-display);line-height:1.1;
@@ -208,7 +212,7 @@ h1{
   background:linear-gradient(180deg,rgba(255,152,79,.22),rgba(255,152,79,.08));
   color:var(--text-primary);
 }
-.seg-option[aria-pressed="true"] small{color:var(--accent)}
+.seg-option[aria-pressed="true"] small{color:var(--text-primary);opacity:.88}
 .seg-option:focus-visible{outline:4px solid var(--focus);outline-offset:2px}
 
 .mode-desc{
@@ -247,6 +251,8 @@ h1{
 .control-hint{
   font-size:var(--fs-small);color:var(--text-secondary);text-align:center;
   display:flex;gap:8px;justify-content:center;flex-wrap:wrap;align-items:center;
+  background:rgba(6,28,30,.8);border:1px solid var(--border);
+  border-radius:999px;padding:8px 16px;
 }
 kbd{
   font-family:var(--font-mono);font-size:var(--fs-caption);
@@ -338,24 +344,51 @@ kbd{
 .mole-hole{
   position:relative;display:grid;place-items:center;
   min-width:88px;min-height:88px;
-  border:3px solid rgba(255,255,255,.22);border-radius:50%;
+  border:3px solid #5c3a22;border-radius:50%;
   color:var(--text-primary);
   background:radial-gradient(ellipse at center,
     #160f0b 0 43%,#4e2e1d 44% 58%,#875337 59% 70%,transparent 71%);
+  box-shadow:
+    inset 0 5px 9px rgba(0,0,0,.55),
+    inset 0 -2px 4px rgba(135,83,55,.35),
+    0 10px 14px -4px rgba(0,0,0,.4);
   cursor:pointer;overflow:visible;
   transition:transform 160ms var(--ease),border-color 160ms var(--ease),box-shadow 160ms var(--ease);
 }
-.mole-hole:hover{transform:translateY(-2px);border-color:rgba(255,255,255,.5)}
+/* 구멍 아래 잔디에 드리우는 그림자 (땅에 박혀있는 느낌) */
+.mole-hole::after{
+  content:"";position:absolute;left:50%;bottom:-9px;
+  width:78%;height:14px;transform:translateX(-50%);
+  background:radial-gradient(ellipse at center, rgba(2,10,6,.4) 0%, transparent 72%);
+  pointer-events:none;
+}
+/* 구멍 테두리에 삐져나온 잔디 뿌리 (장식, CSS만으로) */
+.mole-hole::before{
+  content:"";position:absolute;left:50%;bottom:-5px;
+  width:64%;height:11px;transform:translateX(-50%);
+  background:
+    radial-gradient(circle at 12% 100%, var(--grass) 0 4.5px, transparent 5.5px),
+    radial-gradient(circle at 32% 100%, var(--grass-light) 0 5.5px, transparent 6.5px),
+    radial-gradient(circle at 52% 100%, var(--grass) 0 4px, transparent 5px),
+    radial-gradient(circle at 71% 100%, var(--grass-light) 0 5px, transparent 6px),
+    radial-gradient(circle at 90% 100%, var(--grass) 0 4px, transparent 5px);
+  pointer-events:none;
+}
+.mole-hole:hover{transform:translateY(-2px);border-color:#7a4c2c}
 .mole-hole:focus-visible{outline:4px solid var(--focus);outline-offset:5px}
 .mole-hole[data-active="true"]{
   border-color:var(--accent);
-  box-shadow:0 0 0 5px rgba(255,153,72,.18),0 18px 32px rgba(0,0,0,.28);
+  box-shadow:
+    inset 0 5px 9px rgba(0,0,0,.55),
+    0 0 0 5px rgba(255,153,72,.18),0 18px 32px rgba(0,0,0,.28);
 }
 .mole-hole[data-answer="true"]{
   border-color:var(--warning);
-  box-shadow:0 0 0 5px rgba(255,209,102,.28);
+  box-shadow:
+    inset 0 5px 9px rgba(0,0,0,.55),
+    0 0 0 5px rgba(255,209,102,.28);
 }
-.mole-hole[data-active="true"][data-result="hit"]{border-color:var(--success);box-shadow:0 0 0 6px rgba(96,211,148,.28)}
+.mole-hole[data-active="true"][data-result="hit"]{border-color:var(--success);box-shadow:inset 0 5px 9px rgba(0,0,0,.55),0 0 0 6px rgba(96,211,148,.28)}
 .mole-hole[data-active="true"][data-result="wrong"]{border-color:var(--danger)}
 
 .direction-icon{
