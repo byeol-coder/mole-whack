@@ -325,15 +325,14 @@ kbd{
 .mole-stage-wrap{flex:1;min-height:0;display:grid;place-items:center;padding:6px 0 32px}
 .mole-stage{
   position:relative;
-  max-width:min(100%,570px);max-height:100%;margin-inline:auto;
-  display:grid;gap:14px;
+  width:var(--stage-w,570px);height:var(--stage-h,524px);margin-inline:auto;
+  display:grid;gap:var(--stage-gap,14px);
   grid-template-columns:repeat(3,1fr);
   grid-template-rows:repeat(3,1fr);
   grid-template-areas:
     ".    up    ."
     "left center right"
     ".    down  .";
-  aspect-ratio:1/.92;
 }
 .mole-hole--up{grid-area:up}
 .mole-hole--left{grid-area:left}
@@ -343,7 +342,7 @@ kbd{
 
 .mole-hole{
   position:relative;display:grid;place-items:center;
-  min-width:88px;min-height:88px;
+  min-width:var(--hole-min,88px);min-height:var(--hole-min,88px);
   border:3px solid #5c3a22;border-radius:50%;
   color:var(--text-primary);
   background:radial-gradient(ellipse at center,
@@ -556,8 +555,6 @@ dialog::backdrop{background:rgba(4,20,22,.72);backdrop-filter:blur(4px)}
    9. 반응형 (명세 §7)
    ============================================================ */
 @media (max-width:560px){
-  .mole-stage{gap:8px}
-  .mole-hole{min-width:68px;min-height:68px}
   .game-hud{grid-template-columns:repeat(2,minmax(0,1fr))}
   .game-controls{grid-template-columns:repeat(2,minmax(0,1fr))}
   .result-stats{grid-template-columns:repeat(2,1fr)}
@@ -571,7 +568,6 @@ body.embed .garden-bg{opacity:.9}
   .game-header{min-height:42px}
   .game-hud{margin-block:2px}
   .game-hud>div{padding:7px 10px}
-  .mole-hole{min-height:64px;min-width:64px}
   .play-screen{gap:9px;padding:10px}
   .game-controls button{min-height:42px}
 }
@@ -582,9 +578,9 @@ body.embed .garden-bg{opacity:.9}
   .game-hud{margin-block:0;gap:6px}
   .game-hud>div{padding:4px 8px}
   .reaction-panel{margin-block:2px}
-  .ready-prompt{padding:8px 12px}
-  .mole-stage{gap:6px}
-  .mole-hole{min-height:48px;min-width:48px}
+  .ready-prompt{padding:6px 10px;gap:8px}
+  .ready-prompt p{min-width:0;font-size:var(--fs-caption)}
+  .ready-prompt .button{min-height:32px;padding:0 10px}
   .direction-icon{font-size:clamp(13px,3vmin,18px)}
   .direction-label{display:none}
   .active-mole{width:clamp(40px,40%,90px)}
@@ -882,6 +878,39 @@ const stage = $("stage");
 const feedbackEl = $("round-feedback");
 const statusEl = $("status");
 const reactionPanel = $("reaction-panel");
+
+/* 무대(mole-stage) 크기를 실제 가용 공간 기준으로 JS에서 직접 계산.
+   CSS만으로(퍼센트 max-height + aspect-ratio + grid 조합) 시도했으나
+   브라우저별 신뢰도가 낮고, 특히 도전 모드의 '준비 완료' 패널이 뜨며
+   가용 공간이 줄어드는 경우 무대가 따라 줄지 않는 문제가 실측 확인됨.
+   ResizeObserver로 헤더/HUD/준비패널 등 어떤 변화에도 자동 재계산. */
+const moleStageWrap = document.querySelector(".mole-stage-wrap");
+function fitStage(){
+  if (!moleStageWrap) return;
+  const cs = getComputedStyle(moleStageWrap);
+  const padTop = parseFloat(cs.paddingTop) || 0;
+  const padBottom = parseFloat(cs.paddingBottom) || 0;
+  const availableW = moleStageWrap.clientWidth;
+  const availableH = Math.max(0, moleStageWrap.clientHeight - padTop - padBottom);
+  const capW = Math.min(availableW, 570);
+
+  let gap = 14;
+  let holeSize = Math.min((capW - gap*2)/3, (availableH - gap*2)/3);
+  if (holeSize < 68){ gap = 8; holeSize = Math.min((capW - gap*2)/3, (availableH - gap*2)/3); }
+  if (holeSize < 50){ gap = 6; holeSize = Math.min((capW - gap*2)/3, (availableH - gap*2)/3); }
+  holeSize = Math.max(40, holeSize); // 최소 터치 영역 바닥값 (WCAG AA 24px를 넉넉히 상회)
+
+  const stageSize = holeSize*3 + gap*2;
+  document.documentElement.style.setProperty("--stage-w", stageSize + "px");
+  document.documentElement.style.setProperty("--stage-h", stageSize + "px");
+  document.documentElement.style.setProperty("--stage-gap", gap + "px");
+  document.documentElement.style.setProperty("--hole-min", holeSize + "px");
+}
+if (moleStageWrap){
+  if ("ResizeObserver" in window) new ResizeObserver(fitStage).observe(moleStageWrap);
+  else window.addEventListener("resize", fitStage);
+  fitStage();
+}
 const timerEl = $("round-timer");
 const fillEl = $("round-timer-fill");
 const readyButton = $("ready-button");
@@ -1183,7 +1212,7 @@ DIRS.forEach(function(d){
    반응 패널 상태 (idle → 기본 모드 대기중 / reading → 촉각 확인중(도전) /
    responding → 준비 완료 이후 반응 측정중(도전))
    ============================================================ */
-function setPhase(p){ state.phase = p; reactionPanel.dataset.phase = p; }
+function setPhase(p){ state.phase = p; reactionPanel.dataset.phase = p; if (typeof fitStage === "function") fitStage(); }
 
 /* ============================================================
    타이머 — 도전 모드의 '응답' 구간에서만 동작. 촉각을 읽는
