@@ -322,10 +322,10 @@ kbd{
 @media (prefers-reduced-motion:reduce){ .ready-prompt{animation:none} }
 
 /* 무대: 십자형 구조 */
-.mole-stage-wrap{flex:1;display:grid;place-items:center;min-height:0;padding:6px 0}
+.mole-stage-wrap{flex:1;min-height:0;display:grid;place-items:center;padding:6px 0 32px}
 .mole-stage{
   position:relative;
-  width:min(100%,570px,calc((100vh - 180px)/.92));margin-inline:auto;
+  max-width:min(100%,570px);max-height:100%;margin-inline:auto;
   display:grid;gap:14px;
   grid-template-columns:repeat(3,1fr);
   grid-template-rows:repeat(3,1fr);
